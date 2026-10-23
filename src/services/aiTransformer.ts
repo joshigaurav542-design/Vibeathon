@@ -84,7 +84,7 @@ async function callGeminiAPI(
   draftText: string,
   sliderWeights: { formality: number; warmth: number; urgency: number }
 ): Promise<GeminiTransformPayload> {
-  const systemInstruction = `You are Tone Studio, a state-of-the-art persona and tone modulation engine.
+  const systemInstruction = `You are VibeShift, a state-of-the-art persona and tone modulation engine.
 Given a raw user draft and global target modulation weights (Formality: ${sliderWeights.formality}%, Warmth: ${sliderWeights.warmth}%, Urgency: ${sliderWeights.urgency}%), you will rewrite the EXACT same core facts into 4 distinct personas simultaneously:
 
 1. "executive": Executive C-Level Summary (Board-level brevity, proactive incident mitigation, business impact, clear timelines, zero panicking).

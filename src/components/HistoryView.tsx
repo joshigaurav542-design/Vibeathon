@@ -104,7 +104,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(record, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `tone-studio-record-${record.id}.json`);
+    downloadAnchor.setAttribute('download', `vibeshift-record-${record.id}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -113,7 +113,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
 
   const handleExportTxt = (record: TransformationRecord) => {
     let txt = `==========================================================\n`;
-    txt += `TONE STUDIO TRANSFORMATION RECORD: ${record.id}\n`;
+    txt += `VIBESHIFT TRANSFORMATION RECORD: ${record.id}\n`;
     txt += `Request Time: ${record.requestTimestamp}\n`;
     txt += `Completion Time: ${record.completionTimestamp}\n`;
     txt += `Generation Duration: ${record.durationMs}ms\n`;
@@ -132,7 +132,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
     const dataStr = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `tone-studio-record-${record.id}.txt`);
+    downloadAnchor.setAttribute('download', `vibeshift-record-${record.id}.txt`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
