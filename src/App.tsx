@@ -8,26 +8,63 @@ import { ChatEmptyState } from './components/ChatEmptyState';
 import { ChatInput } from './components/ChatInput';
 import { UserProfileModal } from './components/UserProfileModal';
 import { ToneSlidersModal } from './components/ToneSlidersModal';
+import { LoginPage } from './components/LoginPage';
+import { PersonasView } from './components/PersonasView';
+import { HistoryView } from './components/HistoryView';
+import { AnalyticsView } from './components/AnalyticsView';
 import { Toast } from './components/Toast';
-import { INITIAL_CONVERSATIONS, CURRENT_USER } from './data/mockChatData';
+import { INITIAL_CONVERSATIONS } from './data/mockChatData';
 import { transformDraft } from './services/aiTransformer';
-import { ChatConversation, ChatMessage, PresetScenario } from './types';
+import { 
+  getActiveUser, 
+  authenticateUser, 
+  signOutUser, 
+  updateUserProfile, 
+  loadUserConversations, 
+  saveUserConversations, 
+  deleteUserConversation 
+} from './services/supabaseService';
+import { loadPersonas } from './services/personaStorage';
+import { loadHistory, addHistoryRecord } from './services/historyStorage';
+import { 
+  ChatConversation, 
+  ChatMessage, 
+  PresetScenario, 
+  ActiveNavTab, 
+  TransformationRecord, 
+  PersonaDefinition, 
+  UserProfile 
+} from './types';
 import { Bot } from 'lucide-react';
 
 export function App() {
+  // Authentication State
+  const [user, setUser] = useState<UserProfile | null>(() => getActiveUser());
   const [conversations, setConversations] = useState<ChatConversation[]>(INITIAL_CONVERSATIONS);
   const [activeConversationId, setActiveConversationId] = useState<string>(INITIAL_CONVERSATIONS[0].id);
-  const [user, setUser] = useState(CURRENT_USER);
+  const [activeNavTab, setActiveNavTab] = useState<ActiveNavTab>('chat');
+
+  // Input & Tone Slider State
   const [draftText, setDraftText] = useState('');
   const [sliders, setSliders] = useState({ formality: 45, warmth: 20, urgency: 90 });
   const [isLoading, setIsLoading] = useState(false);
+
+  // App UI State
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isSlidersModalOpen, setIsSlidersModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
 
+  // Data for Personas and History views
+  const [personas, setPersonas] = useState<PersonaDefinition[]>(() => loadPersonas());
+  const [historyRecords, setHistoryRecords] = useState<TransformationRecord[]>(() => loadHistory());
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isInitialLoadRef = useRef(true);
+
+  const refreshPersonas = () => setPersonas(loadPersonas());
+  const refreshHistory = () => setHistoryRecords(loadHistory());
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -37,12 +74,34 @@ export function App() {
     }, 2500);
   };
 
+  // Load conversations when active user changes or mounts
+  useEffect(() => {
+    if (user?.email) {
+      loadUserConversations(user.email).then((loaded) => {
+        if (loaded && loaded.length > 0) {
+          setConversations(loaded);
+          setActiveConversationId(loaded[0].id);
+        }
+        isInitialLoadRef.current = false;
+      });
+    }
+  }, [user?.email]);
+
+  // Sync conversations to Supabase & local storage when updated
+  useEffect(() => {
+    if (!isInitialLoadRef.current && user?.email && conversations.length > 0) {
+      saveUserConversations(user.email, conversations);
+    }
+  }, [conversations, user?.email]);
+
   const activeConversation = conversations.find((c) => c.id === activeConversationId) || conversations[0];
 
   // Auto scroll to bottom when messages update
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [activeConversation?.messages, isLoading]);
+    if (activeNavTab === 'chat') {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activeConversation?.messages, isLoading, activeNavTab]);
 
   // Transform a message for a conversation
   const executeTransformation = useCallback(
@@ -71,7 +130,26 @@ export function App() {
           })
         );
 
-        setUser((prev) => ({ ...prev, totalShifts: prev.totalShifts + 1 }));
+        // Record transformation into audit history
+        addHistoryRecord({
+          requestTimestamp: new Date(Date.now() - result.executionTimeMs).toISOString(),
+          completionTimestamp: new Date().toISOString(),
+          durationMs: result.executionTimeMs,
+          originalDraft: text,
+          detectedVibe: result.detectedVibe,
+          sliderWeights: { ...sliderSettings },
+          selectedPersonaIds: Object.keys(result.personas),
+          outputs: result.personas,
+          status: 'completed',
+        });
+        refreshHistory();
+
+        // Increment user's total shifts
+        if (user) {
+          const updatedUser: UserProfile = { ...user, totalShifts: (user.totalShifts || 0) + 1 };
+          setUser(updatedUser);
+          updateUserProfile(updatedUser);
+        }
 
         confetti({
           particleCount: 35,
@@ -88,10 +166,10 @@ export function App() {
         setIsLoading(false);
       }
     },
-    []
+    [user]
   );
 
-  // Initialize active conversation's first assistant response on mount
+  // Initialize active conversation's first assistant response on mount if needed
   useEffect(() => {
     if (activeConversation && activeConversation.messages.length === 1) {
       const userMsg = activeConversation.messages[0];
@@ -104,6 +182,7 @@ export function App() {
   // Handle switching conversation
   const handleSelectConversation = (id: string) => {
     setActiveConversationId(id);
+    setActiveNavTab('chat');
     const target = conversations.find((c) => c.id === id);
     if (target && target.messages.length === 1 && !target.messages.some((m) => m.role === 'assistant')) {
       const userMsg = target.messages[0];
@@ -124,6 +203,7 @@ export function App() {
     };
     setConversations((prev) => [newConv, ...prev]);
     setActiveConversationId(newId);
+    setActiveNavTab('chat');
     setDraftText('');
   };
 
@@ -140,7 +220,7 @@ export function App() {
   }, []);
 
   // Delete Conversation
-  const handleDeleteConversation = (id: string, e: React.MouseEvent) => {
+  const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     const remaining = conversations.filter((c) => c.id !== id);
     if (remaining.length === 0) {
@@ -154,10 +234,16 @@ export function App() {
       };
       setConversations([freshConv]);
       setActiveConversationId(freshConv.id);
+      if (user?.email) {
+        await deleteUserConversation(user.email, id, [freshConv]);
+      }
     } else {
       setConversations(remaining);
       if (activeConversationId === id) {
         setActiveConversationId(remaining[0].id);
+      }
+      if (user?.email) {
+        await deleteUserConversation(user.email, id, remaining);
       }
     }
     triggerToast('Chat removed from history');
@@ -203,6 +289,7 @@ export function App() {
   const handleSelectScenario = (scenario: PresetScenario) => {
     setSliders(scenario.defaultSliders);
     setDraftText(scenario.draftText);
+    setActiveNavTab('chat');
     triggerToast(`Loaded scenario: "${scenario.label}"`);
   };
 
@@ -280,6 +367,9 @@ export function App() {
     };
     setConversations([freshConv]);
     setActiveConversationId(freshConv.id);
+    if (user?.email) {
+      saveUserConversations(user.email, [freshConv]);
+    }
     triggerToast('Chat history cleared');
   };
 
@@ -298,6 +388,49 @@ export function App() {
     triggerToast('Current chat cleared');
   };
 
+  // Restore record from HistoryView into Studio
+  const handleRestoreToStudio = (record: TransformationRecord) => {
+    setDraftText(record.originalDraft);
+    setSliders(record.sliderWeights);
+    setActiveNavTab('chat');
+    triggerToast('Restored draft from history to Studio!');
+  };
+
+  // Authentication Handlers
+  const handleLoginSuccess = async (loggedUser: UserProfile) => {
+    setUser(loggedUser);
+    const userConvs = await loadUserConversations(loggedUser.email);
+    setConversations(userConvs);
+    if (userConvs.length > 0) {
+      setActiveConversationId(userConvs[0].id);
+    }
+    triggerToast(`Welcome to Tone Studio, ${loggedUser.name}!`);
+  };
+
+  const handleSignOut = async () => {
+    await signOutUser();
+    setUser(null);
+    triggerToast('Signed out of Tone Studio');
+  };
+
+  const handleGuestLogin = async () => {
+    const guest = await authenticateUser('guest@tonestudio.ai', 'Guest Explorer', 'Trial Member');
+    handleLoginSuccess(guest);
+  };
+
+  // If user is not logged in, render LoginPage
+  if (!user) {
+    return (
+      <>
+        <LoginPage
+          onLoginSuccess={handleLoginSuccess}
+          onExploreAsGuest={handleGuestLogin}
+        />
+        <Toast message={toastMessage} isVisible={showToast} />
+      </>
+    );
+  }
+
   return (
     <div className="h-screen w-screen overflow-hidden bg-[#F8FAFC] text-[#0F172A] flex font-sans selection:bg-blue-500/20 selection:text-blue-900">
       {/* Left Sidebar: Chat History & User Profile */}
@@ -309,11 +442,14 @@ export function App() {
         onDeleteConversation={handleDeleteConversation}
         user={user}
         onOpenProfile={() => setIsProfileModalOpen(true)}
+        onSwitchAccount={handleSignOut}
         isOpen={isSidebarOpen}
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        activeTab={activeNavTab}
+        onTabChange={setActiveNavTab}
       />
 
-      {/* Main Chat Canvas */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full min-w-0 bg-[#F8FAFC]">
         {/* Top Navbar */}
         <ChatNavbar
@@ -327,79 +463,122 @@ export function App() {
           onExportJson={handleExportJson}
           onResetChat={handleResetCurrentChat}
           hasMessages={(activeConversation?.messages?.length || 0) > 0}
+          activeTab={activeNavTab}
+          onTabChange={setActiveNavTab}
+          user={user}
+          onSwitchAccount={handleSignOut}
         />
 
-        {/* Scrollable Message Feed */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 flex flex-col">
-          {(!activeConversation || activeConversation.messages.length === 0) ? (
-            <ChatEmptyState onSelectScenario={handleSelectScenario} />
-          ) : (
-            <div className="flex-1 max-w-4xl w-full mx-auto flex flex-col gap-8 pb-4">
-              {activeConversation.messages.map((message) => {
-                if (message.role === 'user') {
-                  return (
-                    <ChatUserMessage key={message.id} message={message} user={user} />
-                  );
-                }
+        {/* Tab 1: Studio Chat View */}
+        {activeNavTab === 'chat' && (
+          <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
+            {/* Scrollable Message Feed */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 flex flex-col">
+              {(!activeConversation || activeConversation.messages.length === 0) ? (
+                <ChatEmptyState onSelectScenario={handleSelectScenario} />
+              ) : (
+                <div className="flex-1 max-w-4xl w-full mx-auto flex flex-col gap-8 pb-4">
+                  {activeConversation.messages.map((message) => {
+                    if (message.role === 'user') {
+                      return (
+                        <ChatUserMessage key={message.id} message={message} user={user} />
+                      );
+                    }
 
-                if (message.role === 'assistant' && message.transformationResult) {
-                  // Find preceding user message to calculate word diff accurately
-                  const msgIndex = activeConversation.messages.findIndex((m) => m.id === message.id);
-                  const precedingUserMsg = activeConversation.messages
-                    .slice(0, msgIndex)
-                    .reverse()
-                    .find((m) => m.role === 'user');
+                    if (message.role === 'assistant' && message.transformationResult) {
+                      // Find preceding user message to calculate word diff accurately
+                      const msgIndex = activeConversation.messages.findIndex((m) => m.id === message.id);
+                      const precedingUserMsg = activeConversation.messages
+                        .slice(0, msgIndex)
+                        .reverse()
+                        .find((m) => m.role === 'user');
 
-                  const sourceDraft =
-                    precedingUserMsg?.content || message.transformationResult.sourceDraft;
+                      const sourceDraft =
+                        precedingUserMsg?.content || message.transformationResult.sourceDraft;
 
-                  return (
-                    <ChatAssistantMessage
-                      key={message.id}
-                      result={message.transformationResult}
-                      originalDraft={sourceDraft}
-                      onCopySingle={handleCopySingle}
-                    />
-                  );
-                }
+                      return (
+                        <ChatAssistantMessage
+                          key={message.id}
+                          result={message.transformationResult}
+                          originalDraft={sourceDraft}
+                          onCopySingle={handleCopySingle}
+                        />
+                      );
+                    }
 
-                return null;
-              })}
+                    return null;
+                  })}
 
-              {/* Generating Pulse Indicator */}
-              {isLoading && (
-                <div className="flex gap-4 max-w-4xl w-full animate-fade-in">
-                  <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs flex-shrink-0 animate-pulse">
-                    <Bot className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center gap-3 text-xs text-slate-600">
-                    <div className="flex gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-blue-600 animate-bounce" />
-                      <span className="w-2 h-2 rounded-full bg-emerald-600 animate-bounce [animation-delay:0.15s]" />
-                      <span className="w-2 h-2 rounded-full bg-purple-600 animate-bounce [animation-delay:0.3s]" />
+                  {/* Generating Pulse Indicator */}
+                  {isLoading && (
+                    <div className="flex gap-4 max-w-4xl w-full animate-fade-in">
+                      <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs flex-shrink-0 animate-pulse">
+                        <Bot className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center gap-3 text-xs text-slate-600">
+                        <div className="flex gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-blue-600 animate-bounce" />
+                          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-bounce [animation-delay:0.15s]" />
+                          <span className="w-2 h-2 rounded-full bg-purple-600 animate-bounce [animation-delay:0.3s]" />
+                        </div>
+                        <span>Modulating linguistic tones & preserving 100% facts across 4 personas...</span>
+                      </div>
                     </div>
-                    <span>Modulating linguistic tones & preserving 100% facts across 4 personas...</span>
-                  </div>
+                  )}
+
+                  <div ref={messagesEndRef} />
                 </div>
               )}
-
-              <div ref={messagesEndRef} />
             </div>
-          )}
-        </div>
 
-        {/* Bottom Prompter Dock */}
-        <div className="border-t border-slate-200 bg-[#F8FAFC]/95 backdrop-blur-md">
-          <ChatInput
-            draftText={draftText}
-            setDraftText={setDraftText}
-            onSend={handleSend}
-            isLoading={isLoading}
-            onOpenSliders={() => setIsSlidersModalOpen(true)}
-            sliders={sliders}
-            onSelectScenario={handleSelectScenario}
-          />
-        </div>
+            {/* Bottom Prompter Dock */}
+            <div className="border-t border-slate-200 bg-[#F8FAFC]/95 backdrop-blur-md">
+              <ChatInput
+                draftText={draftText}
+                setDraftText={setDraftText}
+                onSend={handleSend}
+                isLoading={isLoading}
+                onOpenSliders={() => setIsSlidersModalOpen(true)}
+                sliders={sliders}
+                onSelectScenario={handleSelectScenario}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Tab 2: Personas View */}
+        {activeNavTab === 'personas' && (
+          <div className="flex-1 overflow-y-auto bg-[#0B0F19] text-white">
+            <PersonasView
+              personas={personas}
+              onPersonasChange={refreshPersonas}
+              onNavigateToStudio={() => setActiveNavTab('chat')}
+              triggerToast={triggerToast}
+            />
+          </div>
+        )}
+
+        {/* Tab 3: History View */}
+        {activeNavTab === 'history' && (
+          <div className="flex-1 overflow-y-auto bg-[#0B0F19] text-white">
+            <HistoryView
+              historyRecords={historyRecords}
+              onHistoryChange={refreshHistory}
+              onRestoreToStudio={handleRestoreToStudio}
+              triggerToast={triggerToast}
+            />
+          </div>
+        )}
+
+        {/* Tab 4: Analytics View */}
+        {activeNavTab === 'analytics' && (
+          <div className="flex-1 overflow-y-auto bg-[#0B0F19] text-white">
+            <AnalyticsView
+              historyRecords={historyRecords}
+              onNavigateToStudio={() => setActiveNavTab('chat')}
+            />
+          </div>
+        )}
       </div>
 
       {/* User Profile Modal */}
@@ -409,9 +588,10 @@ export function App() {
         onClose={() => setIsProfileModalOpen(false)}
         onClearHistory={handleClearHistory}
         onExportHistory={handleExportAllHistory}
-        onUpdateUser={(updated) => {
-          setUser(updated);
-          triggerToast('Profile updated');
+        onUpdateUser={async (updated) => {
+          const res = await updateUserProfile(updated);
+          setUser(res);
+          triggerToast('Profile updated & synced to Supabase');
         }}
       />
 

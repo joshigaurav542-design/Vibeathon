@@ -15,17 +15,17 @@ export const Header: React.FC<HeaderProps> = ({ onReset }) => {
           <button 
             onClick={onReset}
             className="flex items-center gap-2.5 group focus:outline-none"
-            title="Reload VibeShift Studio"
+            title="Reload Tone Studio"
           >
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center text-indigo-400 group-hover:scale-105 group-hover:border-indigo-400 transition-all duration-200 shadow-[0_0_15px_rgba(99,102,241,0.25)]">
-              <Sparkles className="w-5 h-5 text-indigo-400 animate-pulse" />
+            <div className="w-9 h-9 rounded-xl bg-blue-600 border border-blue-500/40 flex items-center justify-center text-white group-hover:scale-105 transition-all duration-200 shadow-md">
+              <Sparkles className="w-5 h-5 text-white animate-pulse" />
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-xl font-bold tracking-tight text-white font-sans">
-                Vibe<span className="text-indigo-400">Shift</span>
+                Tone <span className="text-blue-400">Studio</span>
               </span>
               <span className="font-mono text-[10px] bg-[#1C1F2A] text-slate-400 px-1.5 py-0.5 rounded border border-[#313540]">
-                v2.4
+                (Instant Persona Transformer)
               </span>
             </div>
           </button>

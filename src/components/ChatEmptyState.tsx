@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, ShieldAlert, FileCode2, AlertTriangle, MessageSquarePlus } from 'lucide-react';
+import { ArrowRight, ShieldAlert, FileCode2, AlertTriangle, Sparkles } from 'lucide-react';
 import { SAMPLE_SCENARIOS } from '../data/sampleScenarios';
 import { PresetScenario } from '../types';
 
@@ -17,27 +17,32 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({ onSelectScenario
       case 'code-review':
         return <FileCode2 className="w-4 h-4 text-blue-600" />;
       default:
-        return <MessageSquarePlus className="w-4 h-4 text-blue-600" />;
+        return <Sparkles className="w-4 h-4 text-blue-600" />;
     }
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto select-none my-auto">
-      {/* Clean Blue Icon (No VibeShift AI Logo) */}
-      <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 mb-4 shadow-xs">
-        <MessageSquarePlus className="w-6 h-6" />
+    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto select-none my-auto animate-fade-in">
+      {/* Brand Icon */}
+      <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 mb-3 shadow-xs">
+        <Sparkles className="w-6 h-6" />
       </div>
 
-      {/* Title */}
-      <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-2">
-        Where would you like to shift your tone?
-      </h2>
+      {/* Brand Header */}
+      <div className="flex flex-col items-center gap-1 mb-3">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Tone Studio
+        </h1>
+        <p className="text-xs sm:text-sm font-semibold text-blue-600 tracking-wide uppercase">
+          (Instant Persona and Communication Transformer)
+        </p>
+      </div>
 
-      <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mb-8 max-w-md">
-        Type or paste any raw draft, emotional Slack message, or difficult client update. Our model translates it simultaneously into Executive, Supportive Peer, Legal, and Gen-Z tones while preserving 100% of the facts.
+      <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mb-8 max-w-lg">
+        Type or paste any raw draft, emotional Slack update, or sensitive client message below. Tone Studio simultaneously translates it into Executive, Supportive Peer, Legal, and Gen-Z tones while preserving 100% of the facts.
       </p>
 
-      {/* Preset Cards */}
+      {/* Preset Scenario Cards */}
       <div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
         {SAMPLE_SCENARIOS.map((scenario) => (
           <button
@@ -61,7 +66,7 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({ onSelectScenario
             </div>
 
             <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
-              <span className="font-medium">{scenario.vibe}</span>
+              <span className="font-medium text-slate-600">{scenario.vibe}</span>
             </div>
           </button>
         ))}

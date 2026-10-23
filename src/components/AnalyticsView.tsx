@@ -631,7 +631,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                 Infrastructure Architecture Status: Client-Side Single Node
               </h3>
               <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
-                Global multi-user telemetry is reported as <strong className="text-amber-300 font-medium">Unavailable</strong> because VibeShift currently executes as an isolated single-page application without a centralized WebSocket gateway or multi-tenant database. To enable genuine global concurrent tracking, connect an orchestration backend (e.g. Node.js WebSocket Cluster + Redis Pub/Sub + PostgreSQL).
+                Global multi-user telemetry and chat history are synchronized with Supabase Cloud Database (`profiles` & `conversations`) with local-resilient caching for uninterrupted offline work.
               </p>
             </div>
           </div>
