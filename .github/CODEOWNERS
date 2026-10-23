@@ -1,0 +1,13 @@
+# Governance files: changes need approval from the repo admin (turn on "Require review from Code Owners").
+/AGENTS.md                              @joshigaurav542-design
+/CLAUDE.md                              @joshigaurav542-design
+/ai-governance.json                     @joshigaurav542-design
+/scripts/log_prompt.py                  @joshigaurav542-design
+/tests/                                 @joshigaurav542-design
+/.claude/                               @joshigaurav542-design
+/.gitattributes                         @joshigaurav542-design
+/.github/hooks/                         @joshigaurav542-design
+/.github/workflows/ai-governance.yml    @joshigaurav542-design
+/.githooks/                             @joshigaurav542-design
+/.github/copilot-instructions.md        @joshigaurav542-design
+/.github/CODEOWNERS                     @joshigaurav542-design
