@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  LogIn, 
-  History, 
-  Check 
+import {
+  X,
+  LogIn,
+  User,
+  ShieldCheck,
+  History,
+  Clock,
+  Check,
+  Database
 } from 'lucide-react';
 import { UserProfile, UserLoginRecord } from '../types';
 import { dbGetUserLogins } from '../services/supabaseClient';
@@ -31,7 +35,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     if (isOpen) {
       dbGetUserLogins().then((logs) => setRecentLogins(logs));
     }
-  }, [isOpen]);
+  }, [isOpen]); Working
 
   if (!isOpen) return null;
 
@@ -66,11 +70,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
       onClick={onClose}
     >
-      <div 
+      <div
         className="w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-800"
         onClick={(e) => e.stopPropagation()}
       >
