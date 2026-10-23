@@ -55,30 +55,30 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <div className="w-full max-w-4xl mx-auto px-4 pb-4 pt-2 select-none">
       {/* Container Box */}
-      <div className="relative rounded-2xl bg-[#0F1422] border border-[#232B40] hover:border-[#374151] focus-within:border-indigo-500/60 focus-within:ring-1 focus-within:ring-indigo-500/20 shadow-2xl transition-all flex flex-col p-3 gap-2">
+      <div className="relative rounded-2xl bg-white border border-slate-300 hover:border-slate-400 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-500/20 shadow-md transition-all flex flex-col p-3 gap-2">
         {/* Quick Tone Indicator Pill */}
-        <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 border-b border-[#1F2937]/50 pb-2">
+        <div className="flex items-center justify-between text-[11px] text-slate-500 px-1 border-b border-slate-100 pb-2">
           <button
             onClick={onOpenSliders}
-            className="flex items-center gap-1.5 hover:text-white transition-colors py-0.5"
+            className="flex items-center gap-1.5 hover:text-slate-900 transition-colors py-0.5"
             title="Click to adjust tone sliders"
           >
-            <SlidersHorizontal className="w-3 h-3 text-indigo-400" />
-            <span>Tone Weights:</span>
-            <span className="font-mono text-indigo-400 font-semibold">
+            <SlidersHorizontal className="w-3 h-3 text-blue-600" />
+            <span className="font-medium">Tone Weights:</span>
+            <span className="font-mono text-blue-700 font-bold">
               Formality {sliders.formality}%
             </span>
-            <span className="text-slate-600">•</span>
-            <span className="font-mono text-emerald-400 font-semibold">
+            <span className="text-slate-300">•</span>
+            <span className="font-mono text-emerald-700 font-bold">
               Warmth {sliders.warmth}%
             </span>
-            <span className="text-slate-600">•</span>
-            <span className="font-mono text-amber-400 font-semibold">
+            <span className="text-slate-300">•</span>
+            <span className="font-mono text-amber-700 font-bold">
               Urgency {sliders.urgency}%
             </span>
           </button>
 
-          <div className="flex items-center gap-2 text-slate-500 font-mono text-[10px]">
+          <div className="flex items-center gap-2 text-slate-400 font-mono text-[10px]">
             <span>{wordCount} words</span>
             <span>•</span>
             <span>{charCount} chars</span>
@@ -93,7 +93,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder="Paste or type raw draft (e.g., an outage update, frank PR review, or scope pushback)..."
           rows={2}
-          className="w-full bg-transparent text-sm text-slate-200 placeholder-slate-500 resize-none focus:outline-none leading-relaxed px-1 min-h-[50px] max-h-[180px]"
+          className="w-full bg-transparent text-sm text-slate-900 placeholder-slate-400 resize-none focus:outline-none leading-relaxed px-1 min-h-[50px] max-h-[180px]"
         />
 
         {/* Action Controls Bar */}
@@ -104,9 +104,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               <button
                 key={scenario.id}
                 onClick={() => onSelectScenario(scenario)}
-                className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[#141A29] hover:bg-[#1C2438] border border-[#232B40] text-[11px] text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap"
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[11px] text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap"
               >
-                <Sparkles className="w-3 h-3 text-indigo-400" />
+                <Sparkles className="w-3 h-3 text-blue-600" />
                 <span>{scenario.label}</span>
               </button>
             ))}
@@ -114,9 +114,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
           {/* Right Action: Send Button */}
           <div className="flex items-center gap-2 ml-auto">
-            <span className="hidden md:inline text-[10px] text-slate-500 flex items-center gap-1">
+            <span className="hidden md:inline text-[10px] text-slate-400 flex items-center gap-1">
               <span>Press</span>
-              <kbd className="px-1 py-0.5 rounded bg-[#141A29] border border-[#232B40] font-mono text-[9px]">
+              <kbd className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 font-mono text-[9px] text-slate-600">
                 Enter ↵
               </kbd>
             </span>
@@ -126,13 +126,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               disabled={!draftText.trim() || isLoading}
               className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${
                 draftText.trim() && !isLoading
-                  ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 cursor-pointer hover:scale-105'
-                  : 'bg-[#181F30] text-slate-600 cursor-not-allowed'
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/30 cursor-pointer hover:scale-105'
+                  : 'bg-slate-100 text-slate-300 cursor-not-allowed'
               }`}
-              title="Transform across 4 personas"
+              title="Transform draft"
             >
               {isLoading ? (
-                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
               ) : (
                 <ArrowUp className="w-4 h-4" />
               )}
@@ -141,7 +141,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       </div>
 
-      <div className="text-center mt-2 text-[11px] text-slate-500">
+      <div className="text-center mt-2 text-[11px] text-slate-400">
         Deterministic linguistic modulation • 100% core facts preserved • Multi-Persona Matrix
       </div>
     </div>

@@ -55,27 +55,27 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-md bg-[#0F1422] border border-[#1F2937] rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-200"
+        className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-800"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1F2937]/80 bg-[#13192B]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400">
+            <div className="p-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-600">
               <SlidersHorizontal className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white tracking-tight">Tone Modulation Controls</h2>
-              <p className="text-[11px] text-slate-400">Fine-tune weights across the 4 personas</p>
+              <h2 className="text-sm font-bold text-slate-900 tracking-tight">Tone Modulation Controls</h2>
+              <p className="text-[11px] text-slate-500">Fine-tune weights across the 4 personas</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors"
             title="Close (Esc)"
           >
             <X className="w-4 h-4" />
@@ -87,8 +87,8 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
           {/* Formality Slider */}
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between items-center text-xs">
-              <span className="font-medium text-slate-200">Formality</span>
-              <span className="font-mono text-indigo-400 font-semibold">{sliders.formality}%</span>
+              <span className="font-semibold text-slate-900">Formality</span>
+              <span className="font-mono text-blue-700 font-bold">{sliders.formality}%</span>
             </div>
             <input
               type="range"
@@ -98,7 +98,7 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
               onChange={(e) => handleSliderChange('formality', Number(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between text-[10px] text-slate-500">
+            <div className="flex justify-between text-[10px] text-slate-400">
               <span>Casual / Conversational</span>
               <span>Boardroom Formal</span>
             </div>
@@ -107,8 +107,8 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
           {/* Warmth Slider */}
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between items-center text-xs">
-              <span className="font-medium text-slate-200">Warmth & Empathy</span>
-              <span className="font-mono text-emerald-400 font-semibold">{sliders.warmth}%</span>
+              <span className="font-semibold text-slate-900">Warmth & Empathy</span>
+              <span className="font-mono text-emerald-700 font-bold">{sliders.warmth}%</span>
             </div>
             <input
               type="range"
@@ -118,7 +118,7 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
               onChange={(e) => handleSliderChange('warmth', Number(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between text-[10px] text-slate-500">
+            <div className="flex justify-between text-[10px] text-slate-400">
               <span>Analytical / Detached</span>
               <span>Deeply Empathetic</span>
             </div>
@@ -127,8 +127,8 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
           {/* Urgency Slider */}
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between items-center text-xs">
-              <span className="font-medium text-slate-200">Urgency</span>
-              <span className="font-mono text-amber-400 font-semibold">{sliders.urgency}%</span>
+              <span className="font-semibold text-slate-900">Urgency</span>
+              <span className="font-mono text-amber-700 font-bold">{sliders.urgency}%</span>
             </div>
             <input
               type="range"
@@ -138,15 +138,15 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
               onChange={(e) => handleSliderChange('urgency', Number(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between text-[10px] text-slate-500">
+            <div className="flex justify-between text-[10px] text-slate-400">
               <span>Relaxed / Low Priority</span>
               <span>Immediate P0 Action</span>
             </div>
           </div>
 
           {/* Quick Presets */}
-          <div className="pt-3 border-t border-[#1F2937]/80">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">
+          <div className="pt-3 border-t border-slate-100">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
               Quick Tone Presets
             </span>
             <div className="grid grid-cols-2 gap-2">
@@ -160,10 +160,10 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
                       urgency: preset.urgency,
                     });
                   }}
-                  className="px-2.5 py-1.5 rounded-lg bg-[#141A29] hover:bg-[#1C2438] border border-[#1F2937] text-left text-xs text-slate-300 hover:text-white transition-all flex items-center justify-between"
+                  className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-left text-xs text-slate-700 hover:text-blue-900 transition-all flex items-center justify-between"
                 >
-                  <span className="truncate">{preset.label}</span>
-                  <Sparkles className="w-3 h-3 text-slate-500" />
+                  <span className="truncate font-medium">{preset.label}</span>
+                  <Sparkles className="w-3 h-3 text-blue-600" />
                 </button>
               ))}
             </div>
@@ -171,10 +171,10 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 bg-[#0B0F19] border-t border-[#1F2937] flex items-center justify-between">
+        <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
           <button
             onClick={() => setSliders({ formality: 50, warmth: 50, urgency: 50 })}
-            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 transition-colors"
           >
             <RotateCcw className="w-3 h-3" />
             Reset Defaults
@@ -184,7 +184,7 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
               if (onApply) onApply();
               onClose();
             }}
-            className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all"
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all"
           >
             Apply Tone Settings
           </button>

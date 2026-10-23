@@ -12,6 +12,7 @@ import { Toast } from './components/Toast';
 import { INITIAL_CONVERSATIONS, CURRENT_USER } from './data/mockChatData';
 import { transformDraft } from './services/aiTransformer';
 import { ChatConversation, ChatMessage, PresetScenario } from './types';
+import { Bot } from 'lucide-react';
 
 export function App() {
   const [conversations, setConversations] = useState<ChatConversation[]>(INITIAL_CONVERSATIONS);
@@ -76,7 +77,7 @@ export function App() {
           particleCount: 35,
           spread: 55,
           origin: { y: 0.85 },
-          colors: ['#6366F1', '#10B981', '#F59E0B', '#8B5CF6'],
+          colors: ['#2563EB', '#1D4ED8', '#60A5FA', '#10B981'],
         });
 
         triggerToast(`Transformed across 4 personas in ${result.executionTimeMs}ms!`);
@@ -115,7 +116,7 @@ export function App() {
     const newId = 'conv-' + Date.now();
     const newConv: ChatConversation = {
       id: newId,
-      title: 'New Vibe Shift',
+      title: 'New Chat',
       createdAt: Date.now(),
       updatedAt: Date.now(),
       category: 'Today',
@@ -145,7 +146,7 @@ export function App() {
     if (remaining.length === 0) {
       const freshConv: ChatConversation = {
         id: 'conv-' + Date.now(),
-        title: 'New Vibe Shift',
+        title: 'New Chat',
         createdAt: Date.now(),
         updatedAt: Date.now(),
         category: 'Today',
@@ -179,7 +180,7 @@ export function App() {
 
     // If new conversation with generic title, rename title smartly
     let updatedTitle = activeConversation.title;
-    if (activeConversation.title === 'New Vibe Shift' || activeConversation.messages.length === 0) {
+    if (activeConversation.title === 'New Chat' || activeConversation.messages.length === 0) {
       updatedTitle = text.slice(0, 32).trim() + (text.length > 32 ? '...' : '');
     }
 
@@ -247,7 +248,7 @@ export function App() {
       encodeURIComponent(JSON.stringify(lastAssistantMsg.transformationResult, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `vibeshift-${activeConversation.id}-${Date.now()}.json`);
+    downloadAnchor.setAttribute('download', `tone-studio-${activeConversation.id}-${Date.now()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -260,7 +261,7 @@ export function App() {
       'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(conversations, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `vibeshift-history-${Date.now()}.json`);
+    downloadAnchor.setAttribute('download', `tone-studio-history-${Date.now()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -271,7 +272,7 @@ export function App() {
   const handleClearHistory = () => {
     const freshConv: ChatConversation = {
       id: 'conv-' + Date.now(),
-      title: 'New Vibe Shift',
+      title: 'New Chat',
       createdAt: Date.now(),
       updatedAt: Date.now(),
       category: 'Today',
@@ -298,7 +299,7 @@ export function App() {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-[#0B0F19] text-[#DFE2F1] flex font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="h-screen w-screen overflow-hidden bg-[#F8FAFC] text-[#0F172A] flex font-sans selection:bg-blue-500/20 selection:text-blue-900">
       {/* Left Sidebar: Chat History & User Profile */}
       <Sidebar
         conversations={conversations}
@@ -313,10 +314,10 @@ export function App() {
       />
 
       {/* Main Chat Canvas */}
-      <div className="flex-1 flex flex-col h-full min-w-0 bg-[#0B0F19]">
+      <div className="flex-1 flex flex-col h-full min-w-0 bg-[#F8FAFC]">
         {/* Top Navbar */}
         <ChatNavbar
-          conversationTitle={activeConversation?.title || 'VibeShift Chat'}
+          conversationTitle={activeConversation?.title || 'Tone Studio Chat'}
           isSidebarOpen={isSidebarOpen}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           onOpenSliders={() => setIsSlidersModalOpen(true)}
@@ -368,14 +369,14 @@ export function App() {
               {/* Generating Pulse Indicator */}
               {isLoading && (
                 <div className="flex gap-4 max-w-4xl w-full animate-fade-in">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 flex-shrink-0 animate-pulse">
-                    <div className="w-2 h-2 rounded-full bg-white" />
+                  <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs flex-shrink-0 animate-pulse">
+                    <Bot className="w-4 h-4 text-white" />
                   </div>
-                  <div className="p-4 rounded-2xl bg-[#111827] border border-[#1F2937] flex items-center gap-3 text-xs text-slate-400">
+                  <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center gap-3 text-xs text-slate-600">
                     <div className="flex gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" />
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.15s]" />
-                      <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce [animation-delay:0.3s]" />
+                      <span className="w-2 h-2 rounded-full bg-blue-600 animate-bounce" />
+                      <span className="w-2 h-2 rounded-full bg-emerald-600 animate-bounce [animation-delay:0.15s]" />
+                      <span className="w-2 h-2 rounded-full bg-purple-600 animate-bounce [animation-delay:0.3s]" />
                     </div>
                     <span>Modulating linguistic tones & preserving 100% facts across 4 personas...</span>
                   </div>
@@ -388,7 +389,7 @@ export function App() {
         </div>
 
         {/* Bottom Prompter Dock */}
-        <div className="border-t border-[#1F2937]/50 bg-[#0B0F19]/90 backdrop-blur-md">
+        <div className="border-t border-slate-200 bg-[#F8FAFC]/95 backdrop-blur-md">
           <ChatInput
             draftText={draftText}
             setDraftText={setDraftText}

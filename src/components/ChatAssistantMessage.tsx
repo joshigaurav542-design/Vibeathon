@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Sparkles, 
+  Bot, 
   Briefcase, 
   HeartHandshake, 
   Scale, 
@@ -12,7 +12,8 @@ import {
   ShieldCheck, 
   ChevronDown,
   ChevronUp,
-  Volume2
+  Volume2,
+  Sparkles
 } from 'lucide-react';
 import { PersonaOutput, PersonaType, TransformationResult } from '../types';
 import { computeWordDiff } from '../utils/diffAnalyzer';
@@ -86,27 +87,27 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
     switch (color) {
       case 'amber':
         return {
-          tab: 'border-amber-500/50 text-amber-400 bg-amber-500/10',
-          badge: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-          accent: '#F59E0B',
+          tab: 'border-amber-500 text-amber-800 bg-amber-50 font-semibold',
+          badge: 'bg-amber-50 text-amber-800 border-amber-300',
+          accent: '#D97706',
         };
       case 'emerald':
         return {
-          tab: 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10',
-          badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-          accent: '#10B981',
+          tab: 'border-emerald-500 text-emerald-800 bg-emerald-50 font-semibold',
+          badge: 'bg-emerald-50 text-emerald-800 border-emerald-300',
+          accent: '#059669',
         };
       case 'cyan':
         return {
-          tab: 'border-cyan-500/50 text-cyan-400 bg-cyan-500/10',
-          badge: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
-          accent: '#06B6D4',
+          tab: 'border-blue-500 text-blue-800 bg-blue-50 font-semibold',
+          badge: 'bg-blue-50 text-blue-800 border-blue-300',
+          accent: '#2563EB',
         };
       case 'purple':
         return {
-          tab: 'border-purple-500/50 text-purple-400 bg-purple-500/10',
-          badge: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-          accent: '#8B5CF6',
+          tab: 'border-purple-500 text-purple-800 bg-purple-50 font-semibold',
+          badge: 'bg-purple-50 text-purple-800 border-purple-300',
+          accent: '#7C3AED',
         };
     }
   };
@@ -134,17 +135,17 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
     return (
       <div 
         key={persona.id}
-        className="p-5 rounded-2xl bg-[#111827] border border-[#1F2937] flex flex-col gap-4 transition-all hover:border-[#374151]"
+        className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col gap-4 transition-all hover:border-slate-300"
       >
         {/* Persona Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-[#1F2937]/70">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${styles.badge}`}>
               {getPersonaIcon(persona.id)}
               <span>{persona.badgeLabel}</span>
             </span>
             <span className="text-xs text-slate-400 hidden sm:inline">•</span>
-            <span className="text-xs text-slate-400 hidden sm:inline">{persona.description}</span>
+            <span className="text-xs text-slate-500 hidden sm:inline">{persona.description}</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -153,8 +154,8 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
               onClick={() => handleSimulateTTS(persona.rewrittenText, persona.id)}
               className={`p-1.5 rounded-lg border transition-all ${
                 isAudioActive
-                  ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300 animate-pulse'
-                  : 'bg-[#161D2E] border-[#222C42] text-slate-400 hover:text-white'
+                  ? 'bg-blue-50 border-blue-300 text-blue-700 animate-pulse'
+                  : 'bg-white border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50'
               }`}
               title="Read aloud"
             >
@@ -166,8 +167,8 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
               onClick={() => handleCopy(persona.rewrittenText, persona.title, persona.id)}
               className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                 isCopied
-                  ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
-                  : 'bg-[#161D2E] border-[#222C42] text-slate-300 hover:text-white hover:bg-[#1D273D]'
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700 font-semibold'
+                  : 'bg-white border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-xs'
               }`}
               title="Copy rewrite"
             >
@@ -187,7 +188,7 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
         </div>
 
         {/* Rewritten Text / Diff View */}
-        <div className="p-4 rounded-xl bg-[#0B0F19] border border-[#1F2937]/80 text-sm leading-relaxed text-slate-200">
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-sm leading-relaxed text-slate-900">
           {showDiff ? (
             <div className="flex flex-wrap gap-y-1 items-baseline">
               {diffTokens.map((token, index) => {
@@ -195,7 +196,7 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
                   return (
                     <del
                       key={index}
-                      className="px-1.5 py-0.5 rounded text-rose-300 bg-rose-500/20 line-through mr-1 text-xs select-none"
+                      className="px-1.5 py-0.5 rounded text-rose-800 bg-rose-100/90 line-through mr-1 text-xs border border-rose-300 select-none"
                     >
                       {token.text}
                     </del>
@@ -205,7 +206,7 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
                   return (
                     <ins
                       key={index}
-                      className="px-1.5 py-0.5 rounded text-emerald-300 bg-emerald-500/20 no-underline font-medium mr-1 shadow-sm"
+                      className="px-1.5 py-0.5 rounded text-emerald-800 bg-emerald-100/90 no-underline font-medium mr-1 border border-emerald-300 shadow-xs"
                     >
                       {token.text}
                     </ins>
@@ -224,26 +225,26 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
         </div>
 
         {/* Tone Scores & Delta Stats */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs text-slate-400">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs text-slate-500">
           {/* Tone Mini Bars */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
               <span className="text-[11px] text-slate-500">Formality</span>
-              <span className="font-mono text-xs text-indigo-400 font-semibold">
+              <span className="font-mono text-xs text-blue-700 font-bold">
                 {persona.toneScores.formality}%
               </span>
             </div>
-            <span className="text-slate-600">•</span>
+            <span className="text-slate-300">•</span>
             <div className="flex items-center gap-1.5">
               <span className="text-[11px] text-slate-500">Empathy</span>
-              <span className="font-mono text-xs text-emerald-400 font-semibold">
+              <span className="font-mono text-xs text-emerald-700 font-bold">
                 {persona.toneScores.empathy}%
               </span>
             </div>
-            <span className="text-slate-600">•</span>
+            <span className="text-slate-300">•</span>
             <div className="flex items-center gap-1.5">
               <span className="text-[11px] text-slate-500">Urgency</span>
-              <span className="font-mono text-xs text-amber-400 font-semibold">
+              <span className="font-mono text-xs text-amber-700 font-bold">
                 {persona.toneScores.urgency}%
               </span>
             </div>
@@ -252,9 +253,9 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
           {/* Facts Preserved Toggle */}
           <button
             onClick={() => toggleFacts(persona.id)}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#141A29] hover:bg-[#1B2336] border border-[#232B40] text-[11px] text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[11px] text-slate-700 hover:text-slate-900 transition-colors"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             <span>{persona.preservedFacts.length} Facts Preserved</span>
             {isShowingFacts ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           </button>
@@ -262,15 +263,15 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
 
         {/* Collapsible Preserved Facts List */}
         {isShowingFacts && (
-          <div className="p-3 rounded-xl bg-[#0E1321] border border-[#1F2937] flex flex-col gap-1.5 animate-fade-in text-xs">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-1.5 animate-fade-in text-xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
               Verified 100% Core Facts:
             </span>
             <div className="flex flex-wrap gap-1.5 mt-1">
               {persona.preservedFacts.map((fact, idx) => (
                 <span
                   key={idx}
-                  className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px]"
+                  className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-medium"
                 >
                   ✓ {fact}
                 </span>
@@ -284,10 +285,10 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
 
   return (
     <div className="flex gap-3 sm:gap-4 max-w-5xl w-full">
-      {/* Bot Avatar */}
+      {/* Bot Avatar (Minimal Blue & Clean, No VibeShift Logo) */}
       <div className="flex-shrink-0 pt-0.5">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-          <Sparkles className="w-4 h-4" />
+        <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
+          <Bot className="w-4 h-4 text-white" />
         </div>
       </div>
 
@@ -296,11 +297,11 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
         {/* Metadata Banner */}
         <div className="flex flex-wrap items-center justify-between gap-2 pb-1 text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-white tracking-tight">VibeShift AI</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#171E30] border border-[#252E44] text-slate-300 font-medium">
+            <span className="font-bold text-slate-900 tracking-tight">AI Assistant</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-medium">
               Vibe: {result.detectedVibe}
             </span>
-            <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">
+            <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
               ({result.executionTimeMs}ms)
             </span>
           </div>
@@ -311,18 +312,18 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
               onClick={() => setShowDiff(!showDiff)}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                 showDiff
-                  ? 'bg-indigo-500/15 border border-indigo-500/40 text-indigo-300'
-                  : 'bg-[#141A29] border border-[#232B40] text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-50 border border-blue-300 text-blue-700 font-semibold'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900 shadow-xs'
               }`}
             >
               {showDiff ? (
                 <>
-                  <GitCompare className="w-3.5 h-3.5 text-indigo-400" />
+                  <GitCompare className="w-3.5 h-3.5 text-blue-600" />
                   <span>Diff View</span>
                 </>
               ) : (
                 <>
-                  <Eye className="w-3.5 h-3.5 text-slate-400" />
+                  <Eye className="w-3.5 h-3.5 text-slate-500" />
                   <span>Clean View</span>
                 </>
               )}
@@ -336,8 +337,8 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
             onClick={() => setSelectedPersonaTab('all')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap ${
               selectedPersonaTab === 'all'
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                : 'bg-[#141A29] hover:bg-[#1C2438] text-slate-400 hover:text-slate-200 border border-[#232B40]'
+                ? 'bg-blue-600 text-white font-semibold shadow-xs'
+                : 'bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200 shadow-xs'
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
@@ -351,10 +352,10 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
               <button
                 key={p.id}
                 onClick={() => setSelectedPersonaTab(p.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap border ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap border shadow-xs ${
                   isTabActive
                     ? styles.tab
-                    : 'bg-[#141A29] hover:bg-[#1C2438] text-slate-400 hover:text-slate-200 border-[#232B40]'
+                    : 'bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border-slate-200'
                 }`}
               >
                 {getPersonaIcon(p.id)}
