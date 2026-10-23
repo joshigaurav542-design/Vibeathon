@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, SlidersHorizontal, RotateCcw, Sparkles } from 'lucide-react';
 
 interface ToneSlidersModalProps {
@@ -26,6 +26,20 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
   setSliders,
   onApply,
 }) => {
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSliderChange = (key: 'formality' | 'warmth' | 'urgency', value: number) => {
@@ -40,7 +54,10 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+    >
       <div 
         className="w-full max-w-md bg-[#0F1422] border border-[#1F2937] rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-200"
         onClick={(e) => e.stopPropagation()}
@@ -59,6 +76,7 @@ export const ToneSlidersModal: React.FC<ToneSlidersModalProps> = ({
           <button
             onClick={onClose}
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            title="Close (Esc)"
           >
             <X className="w-4 h-4" />
           </button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   PanelLeft, 
   SlidersHorizontal, 
@@ -43,6 +43,32 @@ export const ChatNavbar: React.FC<ChatNavbarProps> = ({
 }) => {
   const [showPresetsDropdown, setShowPresetsDropdown] = useState(false);
   const [copiedAll, setCopiedAll] = useState(false);
+  const presetsRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click or Escape
+  useEffect(() => {
+    if (!showPresetsDropdown) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (presetsRef.current && !presetsRef.current.contains(e.target as Node)) {
+        setShowPresetsDropdown(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowPresetsDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showPresetsDropdown]);
 
   const handleCopyClick = () => {
     onCopyAll();
@@ -79,7 +105,7 @@ export const ChatNavbar: React.FC<ChatNavbarProps> = ({
       {/* Right Actions */}
       <div className="flex items-center gap-1.5 sm:gap-2">
         {/* Scenario Presets Dropdown */}
-        <div className="relative">
+        <div className="relative" ref={presetsRef}>
           <button
             onClick={() => setShowPresetsDropdown(!showPresetsDropdown)}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#141A29] hover:bg-[#1B2336] border border-[#232B40] text-slate-300 hover:text-white text-xs font-medium transition-all"

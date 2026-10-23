@@ -2,8 +2,8 @@ import { ChatConversation, UserProfile } from '../types';
 import { SAMPLE_SCENARIOS } from './sampleScenarios';
 
 export const CURRENT_USER: UserProfile = {
-  name: 'Alex Rivera',
-  email: 'alex.rivera@vibe.ai',
+  name: 'Gaurav Joshi',
+  email: 'joshigaurav542@gmail.com',
   avatarUrl: '',
   role: 'Staff Product Engineer',
   plan: 'Pro',

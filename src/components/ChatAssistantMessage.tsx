@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
   Briefcase, 
@@ -36,6 +36,15 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
   const [showFactsMap, setShowFactsMap] = useState<Record<string, boolean>>({});
   const [isPlayingAudio, setIsPlayingAudio] = useState<string | null>(null);
 
+  // Cancel speech synthesis on unmount
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
   const handleCopy = (text: string, title: string, key: string) => {
     onCopySingle(text, title);
     setCopiedKey(key);
@@ -44,13 +53,24 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
 
   const handleSimulateTTS = (text: string, key: string) => {
     if ('speechSynthesis' in window) {
+      if (isPlayingAudio === key) {
+        window.speechSynthesis.cancel();
+        setIsPlayingAudio(null);
+        return;
+      }
+
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1.05;
       utterance.onend = () => setIsPlayingAudio(null);
+      utterance.onerror = () => setIsPlayingAudio(null);
       setIsPlayingAudio(key);
       window.speechSynthesis.speak(utterance);
     } else {
+      if (isPlayingAudio === key) {
+        setIsPlayingAudio(null);
+        return;
+      }
       setIsPlayingAudio(key);
       setTimeout(() => setIsPlayingAudio(null), 1500);
     }

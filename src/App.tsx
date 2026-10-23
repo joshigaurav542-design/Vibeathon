@@ -126,6 +126,18 @@ export function App() {
     setDraftText('');
   };
 
+  // Global keyboard shortcuts (Cmd/Ctrl + N or K for new chat)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'n' || e.key === 'k')) {
+        e.preventDefault();
+        handleNewChat();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Delete Conversation
   const handleDeleteConversation = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -396,6 +408,10 @@ export function App() {
         onClose={() => setIsProfileModalOpen(false)}
         onClearHistory={handleClearHistory}
         onExportHistory={handleExportAllHistory}
+        onUpdateUser={(updated) => {
+          setUser(updated);
+          triggerToast('Profile updated');
+        }}
       />
 
       {/* Tone Sliders Modal */}

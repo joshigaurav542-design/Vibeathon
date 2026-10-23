@@ -21,12 +21,22 @@ export const ChatUserMessage: React.FC<ChatUserMessageProps> = ({ message, user 
     minute: '2-digit',
   });
 
+  const userInitials = user.name
+    ? user.name
+        .trim()
+        .split(/\s+/)
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : 'VS';
+
   return (
     <div className="flex gap-3 sm:gap-4 max-w-5xl w-full">
       {/* User Avatar */}
       <div className="flex-shrink-0 pt-0.5">
         <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-slate-700 to-slate-800 border border-slate-600/50 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-          AR
+          {userInitials}
         </div>
       </div>
 

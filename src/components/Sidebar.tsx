@@ -48,6 +48,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
     'Older',
   ];
 
+  const userInitials = user.name
+    ? user.name
+        .trim()
+        .split(/\s+/)
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : 'VS';
+
   return (
     <>
       {/* Mobile backdrop */}
@@ -194,7 +204,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="relative flex-shrink-0">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-transform">
-                  AR
+                  {userInitials}
                 </div>
                 <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#0E1321]" />
               </div>
