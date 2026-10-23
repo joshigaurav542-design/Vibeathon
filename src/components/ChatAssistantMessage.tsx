@@ -15,7 +15,7 @@ import {
   Volume2,
   Sparkles
 } from 'lucide-react';
-import { PersonaOutput, PersonaType, TransformationResult } from '../types';
+import { PersonaOutput, PersonaType, TransformationResult, BadgeColor } from '../types';
 import { computeWordDiff } from '../utils/diffAnalyzer';
 
 interface ChatAssistantMessageProps {
@@ -83,7 +83,7 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
 
   const personasList = Object.values(result.personas);
 
-  const getBadgeStyle = (color: 'amber' | 'emerald' | 'cyan' | 'purple') => {
+  const getBadgeStyle = (color: BadgeColor) => {
     switch (color) {
       case 'amber':
         return {
@@ -108,6 +108,24 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
           tab: 'border-purple-500 text-purple-800 bg-purple-50 font-semibold',
           badge: 'bg-purple-50 text-purple-800 border-purple-300',
           accent: '#7C3AED',
+        };
+      case 'indigo':
+        return {
+          tab: 'border-indigo-500/50 text-indigo-400 bg-indigo-500/10',
+          badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
+          accent: '#6366F1',
+        };
+      case 'rose':
+        return {
+          tab: 'border-rose-500/50 text-rose-400 bg-rose-500/10',
+          badge: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+          accent: '#F43F5E',
+        };
+      default:
+        return {
+          tab: 'border-indigo-500/50 text-indigo-400 bg-indigo-500/10',
+          badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
+          accent: '#6366F1',
         };
     }
   };

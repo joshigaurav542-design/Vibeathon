@@ -2,7 +2,7 @@ import { GEMINI_API_KEY, GEMINI_ENDPOINT, IS_API_KEY_CONFIGURED } from '../confi
 import { PersonaOutput, PersonaType, ToneScores, TransformationResult } from '../types';
 import { calculateDeltaStats } from '../utils/diffAnalyzer';
 
-const PERSONA_METADATA: Record<PersonaType, {
+const PERSONA_METADATA: Record<string, {
   title: string;
   badgeLabel: string;
   badgeColor: 'amber' | 'emerald' | 'cyan' | 'purple';
@@ -173,7 +173,8 @@ function assembleResult(
   const personas: Record<PersonaType, PersonaOutput> = {} as any;
 
   (['executive', 'peer', 'legal', 'genz'] as PersonaType[]).forEach((key) => {
-    const rawPersona = payload.personas[key];
+    const personasRecord = payload.personas as Record<string, { rewrittenText: string; toneScores: ToneScores; preservedFacts: string[] }>;
+    const rawPersona = personasRecord[key];
     const meta = PERSONA_METADATA[key];
     const delta = calculateDeltaStats(sourceDraft, rawPersona.rewrittenText);
 
@@ -221,6 +222,8 @@ function getSentimentSummary(type: PersonaType): string {
       return 'Formally Auditable & Compliant';
     case 'genz':
       return 'Energetic & Viral Cadence';
+    default:
+      return 'Custom Persona';
   }
 }
 

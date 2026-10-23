@@ -39,7 +39,14 @@ export const PersonaCard: React.FC<PersonaCardProps> = ({
   };
 
   // Color mappings based on Stitch design specs
-  const colorStyles = {
+  const COLOR_MAP: Record<string, {
+    border: string;
+    badgeBg: string;
+    badgeBorder: string;
+    badgeText: string;
+    glow: string;
+    accent: string;
+  }> = {
     amber: {
       border: 'hover:border-amber-500/60',
       badgeBg: 'bg-amber-500/10',
@@ -72,7 +79,24 @@ export const PersonaCard: React.FC<PersonaCardProps> = ({
       glow: 'shadow-[0_0_20px_-4px_rgba(139,92,246,0.2)]',
       accent: '#8B5CF6',
     },
-  }[persona.badgeColor];
+    indigo: {
+      border: 'hover:border-indigo-500/60',
+      badgeBg: 'bg-indigo-500/10',
+      badgeBorder: 'border-indigo-500/40',
+      badgeText: 'text-indigo-400',
+      glow: 'shadow-[0_0_20px_-4px_rgba(99,102,241,0.2)]',
+      accent: '#6366F1',
+    },
+    rose: {
+      border: 'hover:border-rose-500/60',
+      badgeBg: 'bg-rose-500/10',
+      badgeBorder: 'border-rose-500/40',
+      badgeText: 'text-rose-400',
+      glow: 'shadow-[0_0_20px_-4px_rgba(244,63,94,0.2)]',
+      accent: '#F43F5E',
+    },
+  };
+  const colorStyles = COLOR_MAP[persona.badgeColor] ?? COLOR_MAP.amber;
 
   const renderIcon = () => {
     switch (persona.id) {

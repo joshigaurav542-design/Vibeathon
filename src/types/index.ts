@@ -1,4 +1,6 @@
-export type PersonaType = 'executive' | 'peer' | 'legal' | 'genz';
+export type PersonaType = 'executive' | 'peer' | 'legal' | 'genz' | string;
+
+export type BadgeColor = 'amber' | 'emerald' | 'cyan' | 'purple' | 'indigo' | 'rose';
 
 export interface ToneScores {
   formality: number;
@@ -11,7 +13,7 @@ export interface PersonaOutput {
   id: PersonaType;
   title: string;
   badgeLabel: string;
-  badgeColor: 'amber' | 'emerald' | 'cyan' | 'purple';
+  badgeColor: BadgeColor;
   description: string;
   icon: string;
   rewrittenText: string;
@@ -27,12 +29,50 @@ export interface PersonaOutput {
   preservedFacts: string[];
 }
 
+export interface PersonaDefinition {
+  id: string;
+  name: string;
+  title: string;
+  badgeLabel: string;
+  badgeColor: BadgeColor;
+  description: string;
+  audience: string;
+  toneCharacteristics: string;
+  useCases: string[];
+  defaultTone: ToneScores;
+  icon: string;
+  isBuiltIn: boolean;
+  selectedForStudio: boolean;
+  createdAt?: string;
+  systemPromptModifier?: string;
+}
+
 export interface TransformationResult {
   sourceDraft: string;
   detectedVibe: string;
   inputTone: ToneScores;
   executionTimeMs: number;
-  personas: Record<PersonaType, PersonaOutput>;
+  personas: Record<string, PersonaOutput>;
+}
+
+export interface TransformationRecord {
+  id: string;
+  requestTimestamp: string;
+  completionTimestamp: string;
+  durationMs: number;
+  originalDraft: string;
+  scenarioId?: string;
+  scenarioLabel?: string;
+  detectedVibe: string;
+  sliderWeights: {
+    formality: number;
+    warmth: number;
+    urgency: number;
+  };
+  selectedPersonaIds: string[];
+  outputs: Record<string, PersonaOutput>;
+  status: 'completed' | 'failed' | 'cancelled';
+  errorDetails?: string;
 }
 
 export interface DiffToken {
@@ -51,6 +91,16 @@ export interface PresetScenario {
     urgency: number;
   };
   draftText: string;
+}
+
+export type ActiveNavTab = 'chat' | 'personas' | 'history' | 'analytics';
+
+export interface SessionTelemetry {
+  sessionId: string;
+  startedAt: string;
+  lastActiveAt: string;
+  activeSeconds: number;
+  transformationsCount: number;
 }
 
 export interface ChatMessage {
