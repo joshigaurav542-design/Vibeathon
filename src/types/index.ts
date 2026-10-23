@@ -52,3 +52,39 @@ export interface PresetScenario {
   };
   draftText: string;
 }
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  timestamp: number;
+  content: string;
+  sliders?: {
+    formality: number;
+    warmth: number;
+    urgency: number;
+  };
+  scenarioId?: string;
+  transformationResult?: TransformationResult;
+}
+
+export interface ChatConversation {
+  id: string;
+  title: string;
+  createdAt: number;
+  updatedAt: number;
+  messages: ChatMessage[];
+  activePersonaTab?: 'all' | PersonaType;
+  category?: 'Today' | 'Yesterday' | 'Previous 7 Days' | 'Older';
+  scenarioId?: string;
+}
+
+export interface UserProfile {
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  plan: 'Pro' | 'Free' | 'Enterprise';
+  role: string;
+  totalShifts: number;
+  joinedDate: string;
+  status: 'online' | 'busy' | 'away';
+}
