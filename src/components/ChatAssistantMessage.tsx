@@ -22,7 +22,7 @@ interface ChatAssistantMessageProps {
   result: TransformationResult;
   originalDraft: string;
   onCopySingle: (text: string, title: string) => void;
-  activeTab?: 'all' | PersonaType;
+  activeTab?: 'all' | PersonaType | string;
 }
 
 export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
@@ -31,7 +31,7 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
   onCopySingle,
   activeTab = 'all',
 }) => {
-  const [selectedPersonaTab, setSelectedPersonaTab] = useState<'all' | PersonaType>(activeTab);
+  const [selectedPersonaTab, setSelectedPersonaTab] = useState<'all' | PersonaType | string>(activeTab);
   const [showDiff, setShowDiff] = useState(true);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [showFactsMap, setShowFactsMap] = useState<Record<string, boolean>>({});
@@ -83,7 +83,7 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
 
   const personasList = Object.values(result.personas);
 
-  const getBadgeStyle = (color: 'amber' | 'emerald' | 'cyan' | 'purple') => {
+  const getBadgeStyle = (color: string) => {
     switch (color) {
       case 'amber':
         return {
@@ -97,22 +97,30 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
           badge: 'bg-emerald-50 text-emerald-800 border-emerald-300',
           accent: '#059669',
         };
-      case 'cyan':
-        return {
-          tab: 'border-blue-500 text-blue-800 bg-blue-50 font-semibold',
-          badge: 'bg-blue-50 text-blue-800 border-blue-300',
-          accent: '#2563EB',
-        };
       case 'purple':
         return {
           tab: 'border-purple-500 text-purple-800 bg-purple-50 font-semibold',
           badge: 'bg-purple-50 text-purple-800 border-purple-300',
           accent: '#7C3AED',
         };
+      case 'rose':
+        return {
+          tab: 'border-rose-500 text-rose-800 bg-rose-50 font-semibold',
+          badge: 'bg-rose-50 text-rose-800 border-rose-300',
+          accent: '#E11D48',
+        };
+      case 'cyan':
+      case 'blue':
+      default:
+        return {
+          tab: 'border-blue-500 text-blue-800 bg-blue-50 font-semibold',
+          badge: 'bg-blue-50 text-blue-800 border-blue-300',
+          accent: '#2563EB',
+        };
     }
   };
 
-  const getPersonaIcon = (id: PersonaType) => {
+  const getPersonaIcon = (id: string) => {
     switch (id) {
       case 'executive':
         return <Briefcase className="w-3.5 h-3.5" />;
@@ -121,6 +129,8 @@ export const ChatAssistantMessage: React.FC<ChatAssistantMessageProps> = ({
       case 'legal':
         return <Scale className="w-3.5 h-3.5" />;
       case 'genz':
+        return <Sparkles className="w-3.5 h-3.5" />;
+      default:
         return <Sparkles className="w-3.5 h-3.5" />;
     }
   };

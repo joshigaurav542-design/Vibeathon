@@ -5,9 +5,13 @@ import {
   Trash2, 
   Search, 
   Settings, 
-  PanelLeftClose
+  PanelLeftClose,
+  Users,
+  ShieldCheck,
+  BarChart3,
+  LogIn
 } from 'lucide-react';
-import { ChatConversation, UserProfile } from '../types';
+import { ChatConversation, UserProfile, ActiveView } from '../types';
 
 interface SidebarProps {
   conversations: ChatConversation[];
@@ -17,8 +21,11 @@ interface SidebarProps {
   onDeleteConversation: (id: string, e: React.MouseEvent) => void;
   user: UserProfile;
   onOpenProfile: () => void;
+  onOpenAuth: () => void;
   isOpen: boolean;
   onToggleSidebar: () => void;
+  activeView: ActiveView;
+  onSelectView: (view: ActiveView) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -29,8 +36,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDeleteConversation,
   user,
   onOpenProfile,
+  onOpenAuth,
   isOpen,
   onToggleSidebar,
+  activeView,
+  onSelectView,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -75,10 +85,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         {/* Top Header & New Chat */}
         <div className="p-3.5 flex flex-col gap-3 border-b border-slate-100">
-          {/* Header Title (Clean minimal, No VibeShift AI Logo) */}
+          {/* Header Title & Database Pill */}
           <div className="flex items-center justify-between px-1 pt-1">
             <span className="font-bold text-sm tracking-tight text-slate-900">
-              Chat History
+              VibeShift Studio
             </span>
 
             <button
@@ -90,10 +100,76 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
+          {/* View Switcher Bar */}
+          <div className="flex flex-col gap-1 p-1 rounded-xl bg-slate-50 border border-slate-200/80">
+            <button
+              onClick={() => {
+                onSelectView('studio');
+                if (window.innerWidth < 1024) onToggleSidebar();
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeView === 'studio'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:bg-white hover:text-slate-900'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Transformation Studio</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onSelectView('personas');
+                if (window.innerWidth < 1024) onToggleSidebar();
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeView === 'personas'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:bg-white hover:text-slate-900'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Personas Hub</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onSelectView('audit');
+                if (window.innerWidth < 1024) onToggleSidebar();
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeView === 'audit'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:bg-white hover:text-slate-900'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Audit History</span>
+            </button>
+
+            <button
+              onClick={() => {
+                onSelectView('analytics');
+                if (window.innerWidth < 1024) onToggleSidebar();
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeView === 'analytics'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:bg-white hover:text-slate-900'
+              }`}
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span>Analytics & Metrics</span>
+            </button>
+          </div>
+
           {/* New Chat Button (Vibrant Blue & Clean) */}
           <button
-            onClick={onNewChat}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm hover:shadow transition-all group"
+            onClick={() => {
+              onSelectView('studio');
+              onNewChat();
+            }}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs hover:shadow transition-all group"
           >
             <div className="flex items-center gap-2">
               <Plus className="w-4 h-4 text-white" />
@@ -118,51 +194,53 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Chat History Section */}
-        <div className="flex-1 overflow-y-auto px-2 py-3 flex flex-col gap-4">
+        <div className="flex-1 overflow-y-auto p-2 space-y-4">
           {categories.map((category) => {
-            const items = filteredConversations.filter(
+            const categoryConvs = filteredConversations.filter(
               (c) => (c.category || 'Today') === category
             );
-            if (items.length === 0) return null;
+
+            if (categoryConvs.length === 0) return null;
 
             return (
-              <div key={category} className="flex flex-col gap-1">
-                <span className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <div key={category} className="space-y-1">
+                <div className="px-3 py-1 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                   {category}
-                </span>
+                </div>
 
-                <div className="flex flex-col gap-0.5">
-                  {items.map((conv) => {
-                    const isActive = conv.id === activeConversationId;
+                <div className="space-y-0.5">
+                  {categoryConvs.map((conv) => {
+                    const isActive = conv.id === activeConversationId && activeView === 'studio';
+
                     return (
                       <div
                         key={conv.id}
-                        onClick={() => onSelectConversation(conv.id)}
-                        className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer transition-all ${
+                        onClick={() => {
+                          onSelectView('studio');
+                          onSelectConversation(conv.id);
+                          if (window.innerWidth < 1024) onToggleSidebar();
+                        }}
+                        className={`group flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer text-xs transition-all ${
                           isActive
-                            ? 'bg-blue-50 text-blue-900 font-semibold shadow-xs border border-blue-200'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                            ? 'bg-blue-50 text-blue-900 font-semibold border border-blue-200 shadow-xs'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                         }`}
                       >
-                        {/* Active vertical blue indicator */}
-                        {isActive && (
-                          <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-blue-600" />
-                        )}
-
-                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                        <div className="flex items-center gap-2.5 min-w-0">
                           <MessageSquare
                             className={`w-3.5 h-3.5 flex-shrink-0 ${
                               isActive ? 'text-blue-600' : 'text-slate-400'
                             }`}
                           />
-                          <span className="truncate">{conv.title}</span>
+                          <span className="truncate">{conv.title || 'Untitled Conversation'}</span>
                         </div>
 
-                        {/* Actions (delete) */}
                         <button
                           onClick={(e) => onDeleteConversation(conv.id, e)}
-                          className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-rose-100 text-slate-400 hover:text-rose-600 transition-all flex-shrink-0"
-                          title="Delete chat"
+                          className={`p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all ${
+                            isActive ? 'opacity-70' : ''
+                          }`}
+                          title="Delete Chat"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -181,11 +259,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
+        {/* Database Status Bar */}
+        <div className="px-3 py-2 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+          <span className="flex items-center gap-1.5 font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            Supabase DB Active
+          </span>
+          <button
+            onClick={onOpenAuth}
+            className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold"
+            title="Switch User / Login History"
+          >
+            <LogIn className="w-3 h-3" />
+            <span>Switch</span>
+          </button>
+        </div>
+
         {/* User Profile Section (Fixed at Bottom of Sidebar) */}
-        <div className="p-3 border-t border-slate-200 bg-slate-50">
+        <div className="p-3 border-t border-slate-200 bg-white">
           <button
             onClick={onOpenProfile}
-            className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-200 transition-all text-left group"
+            className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all text-left group"
           >
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="relative flex-shrink-0">

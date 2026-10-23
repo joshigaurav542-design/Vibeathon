@@ -1,4 +1,5 @@
 export type PersonaType = 'executive' | 'peer' | 'legal' | 'genz';
+export type BadgeColor = 'amber' | 'emerald' | 'cyan' | 'purple' | 'blue' | 'rose';
 
 export interface ToneScores {
   formality: number;
@@ -8,10 +9,10 @@ export interface ToneScores {
 }
 
 export interface PersonaOutput {
-  id: PersonaType;
+  id: PersonaType | string;
   title: string;
   badgeLabel: string;
-  badgeColor: 'amber' | 'emerald' | 'cyan' | 'purple';
+  badgeColor: BadgeColor;
   description: string;
   icon: string;
   rewrittenText: string;
@@ -32,7 +33,7 @@ export interface TransformationResult {
   detectedVibe: string;
   inputTone: ToneScores;
   executionTimeMs: number;
-  personas: Record<PersonaType, PersonaOutput>;
+  personas: Record<string, PersonaOutput>;
 }
 
 export interface DiffToken {
@@ -55,6 +56,7 @@ export interface PresetScenario {
 
 export interface ChatMessage {
   id: string;
+  conversationId?: string;
   role: 'user' | 'assistant';
   timestamp: number;
   content: string;
@@ -69,16 +71,18 @@ export interface ChatMessage {
 
 export interface ChatConversation {
   id: string;
+  userId?: string;
   title: string;
   createdAt: number;
   updatedAt: number;
   messages: ChatMessage[];
-  activePersonaTab?: 'all' | PersonaType;
+  activePersonaTab?: 'all' | PersonaType | string;
   category?: 'Today' | 'Yesterday' | 'Previous 7 Days' | 'Older';
   scenarioId?: string;
 }
 
 export interface UserProfile {
+  id?: string;
   name: string;
   email: string;
   avatarUrl?: string;
@@ -87,4 +91,49 @@ export interface UserProfile {
   totalShifts: number;
   joinedDate: string;
   status: 'online' | 'busy' | 'away';
+  lastLoginAt?: number;
 }
+
+export interface CustomPersona {
+  id: string;
+  userId?: string;
+  title: string;
+  badgeLabel: string;
+  badgeColor: BadgeColor;
+  icon: string;
+  description: string;
+  systemPrompt: string;
+  toneScores: ToneScores;
+  isCustom: boolean;
+  createdAt: number;
+}
+
+export interface UserLoginRecord {
+  id: string;
+  userId: string;
+  email: string;
+  timestamp: number;
+  deviceInfo: string;
+  ipAddress?: string;
+  status: 'success' | 'failed';
+  provider: 'email' | 'guest' | 'oauth';
+}
+
+export interface AuditLogEntry {
+  id: string;
+  timestamp: number;
+  userId: string;
+  userName: string;
+  conversationId: string;
+  conversationTitle: string;
+  sourceDraft: string;
+  detectedVibe: string;
+  executionTimeMs: number;
+  factParityPercent: number;
+  preservedFactsCount: number;
+  personasGenerated: string[];
+  governanceStatus: 'compliant' | 'warning' | 'flagged';
+  complianceRule: string;
+}
+
+export type ActiveView = 'studio' | 'personas' | 'audit' | 'analytics';
