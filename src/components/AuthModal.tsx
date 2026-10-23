@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
   X,
   LogIn,
-  User,
-  ShieldCheck,
   History,
-  Clock,
-  Check,
-  Database
+  Check
 } from 'lucide-react';
 import { UserProfile, UserLoginRecord } from '../types';
 import { dbGetUserLogins } from '../services/supabaseClient';
@@ -35,7 +31,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     if (isOpen) {
       dbGetUserLogins().then((logs) => setRecentLogins(logs));
     }
-  }, [isOpen]); Working
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
